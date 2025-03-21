@@ -102,6 +102,7 @@ function newElement() {
     .catch(error => console.error("Error al guardar nuevo elemento:", error));
 }
 
+
 // Función para actualizar la lista en localStorage
 function updateListFromDOM() {
   return new Promise((resolve, reject) => {
@@ -119,5 +120,7 @@ function updateListFromDOM() {
       .catch(reject); // Si hay un error, lo rechaza
   });
 }
+
+
 
 
