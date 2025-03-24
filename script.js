@@ -8,34 +8,50 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch((error) => console.error("Error al cargar los datos:", error));
 });
 
-// Cargar elementos desde el servidor y almacenarlos en localStorage
+// Función para cargar elementos desde el servidor y almacenarlos en localStorage
 async function loadItems() {
   try {
+    // Hacemos una solicitud GET al servidor para obtener la lista de compras
     const response = await fetch('http://localhost:3000/shopping-list');
+    
+    // Si la respuesta no es exitosa, lanzamos un error
     if (!response.ok) throw new Error('Error al cargar los datos del servidor');
 
+    // Parseamos la respuesta JSON y la almacenamos en shoppingList.shoppingItems
     shoppingList.shoppingItems = await response.json();
+
+    // Guardamos la lista en localStorage para persistencia
     localStorage.setItem('shoppingList', JSON.stringify(shoppingList.shoppingItems));
+
+    // Renderizamos la lista en la interfaz de usuario
     renderList();
     console.log('Datos cargados correctamente');
   } catch (error) {
+    // Si ocurre un error, lo mostramos en la consola
     console.error('Error al cargar la lista:', error);
   }
 }
 
+// Función  para guardar elementos en el servidor y localStorage
 async function saveItems() {
   try {
+    // Guardamos la lista actualizada en localStorage
     localStorage.setItem('shoppingList', JSON.stringify(shoppingList.shoppingItems));
+    
+    // Hacemos una solicitud POST al servidor para guardar la lista
     await fetch('http://localhost:3000/shopping-list', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(shoppingList.shoppingItems),
+      method: 'POST', // Indicamos que es una solicitud POST
+      headers: { 'Content-Type': 'application/json' }, // Especificamos el tipo de contenido como JSON
+      body: JSON.stringify(shoppingList.shoppingItems), // Enviamos la lista en el cuerpo de la solicitud
     });
+
     console.log('Elementos guardados correctamente');
   } catch (error) {
+    // Si ocurre un error, lo mostramos en la consola
     console.error('Error al guardar los elementos:', error);
   }
 }
+
 
 
 // Función para renderizar la lista en el DOM
