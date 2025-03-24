@@ -8,33 +8,35 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch((error) => console.error("Error al cargar los datos:", error));
 });
 
-// Función para cargar elementos desde localStorage
-function loadItems() {
-  return new Promise((resolve, reject) => {
-    // Intenta obtener los datos desde localStorage
-    const localData = localStorage.getItem('shoppingList');
-    if (localData) {
-      shoppingList.shoppingItems = JSON.parse(localData);
-      renderList(); // Renderiza la lista en el DOM con los datos locales
-      resolve("Datos cargados desde localStorage");
-    } else {
-      reject("No hay datos en localStorage");
-    }
-  });
+// Cargar elementos desde el servidor y almacenarlos en localStorage
+async function loadItems() {
+  try {
+    const response = await fetch('http://localhost:3000/shopping-list');
+    if (!response.ok) throw new Error('Error al cargar los datos del servidor');
+
+    shoppingList.shoppingItems = await response.json();
+    localStorage.setItem('shoppingList', JSON.stringify(shoppingList.shoppingItems));
+    renderList();
+    console.log('Datos cargados correctamente');
+  } catch (error) {
+    console.error('Error al cargar la lista:', error);
+  }
 }
 
-// Función para guardar los elementos en localStorage
-function saveItems() {
-  return new Promise((resolve, reject) => {
-    try {
-      localStorage.setItem('shoppingList', JSON.stringify(shoppingList.shoppingItems)); // Guarda los datos en localStorage
-      resolve("Elementos guardados exitosamente en localStorage");
-    } catch (error) {
-      console.error("Error guardando en localStorage:", error);
-      reject(error);
-    }
-  });
+async function saveItems() {
+  try {
+    localStorage.setItem('shoppingList', JSON.stringify(shoppingList.shoppingItems));
+    await fetch('http://localhost:3000/shopping-list', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(shoppingList.shoppingItems),
+    });
+    console.log('Elementos guardados correctamente');
+  } catch (error) {
+    console.error('Error al guardar los elementos:', error);
+  }
 }
+
 
 // Función para renderizar la lista en el DOM
 function renderList() {
